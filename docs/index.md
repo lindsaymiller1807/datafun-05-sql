@@ -33,5 +33,5 @@ join and query the related tables.
 
 This project produces the same results in several useful forms.
 
-- [**Reactive App (marimo)**](https://denisecase.github.io/datafun-05-sql/app/)
+- [**Reactive App (marimo)**](https://lindsaymiller1807.github.io/datafun-05-sql/app/)
   - run the analysis interactively in a browser
