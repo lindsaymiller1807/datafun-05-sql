@@ -9,16 +9,14 @@
 [![Zensical docs](https://img.shields.io/badge/Zensical-docs-purple)](https://zensical.org/)
 [![MIT](https://img.shields.io/badge/license-see%20LICENSE-yellow.svg)](./LICENSE)
 
-> Professional Python project: relational data and SQL analytics with a marimo app
-> for parameterized queries (e.g. choose a region to update the chart)
+> Professional Python and SQL project analyzing library book review data.
+> This project compares average review ratings across book genres using related tables.
 
-Notebooks combine narration and code.
-This project works on **related tabular data files** using SQL and Python.
-It includes a reactive marimo app for interacting with the related data.
+This project uses Python, pandas, SQLite, and SQL to analyze related library data.
+The books and reviews tables are connected using `book_id`.
 
-Note: With marimo, analysts can build interactive web apps!
-It's a whole new skill set, and not easy, but it does create
-engaging reports that showcase your analytic skills.
+The analysis calculates the average review rating for each genre and displays the
+results in a bar chart.
 
 ## Motivation
 
@@ -34,38 +32,40 @@ so it can be used in further analysis.
 
 ## This Project
 
-This project introduces **relational data and SQL**
-used when storing structured data in tables.
-Analysts are typically highly skilled at both SQL and Python.
+This project uses **relational data, SQLite, SQL, Python, and pandas**
+to analyze library book review data.
 
-Sample datasets are provided in the `data/raw` folder
-across several topic domains:
+The analysis uses two related tables:
 
-- **retail** - with regions / stores / employees (the worked example)
-- **library** - with state / branch / books
-- **health** - with clinic / patient / visit
-- **movies** - using the **MovieLens** small dataset
+- **books** — contains book information such as title, genre, branch, and pages
+- **reviews** — contains review ratings linked to books using `book_id`
 
-Each domain has related tables.
-Run the retail example,
-and implement a similar project either by expanding the retail work,
-or choosing one of the other recommended domains.
+The project asks:
+
+**How does the average review rating compare across book genres?**
+
+SQL joins the books and reviews tables, groups the results by genre,
+and calculates the average rating for each genre.
+
+The results are then visualized with Python using a bar chart.
 
 ## Produced Artifacts
 
-This project produces the same results in several useful forms.
+## Produced Artifacts
 
-- [**Reactive App (marimo)**](https://lindsaymiller1807.github.io/datafun-05-sql/app/)
-  - run the analysis interactively in a browser
+This project produces several useful outputs:
 
-- [**Reactive Notebook (marimo)**](./src/datafun/notebook.py)
-  - view the Python source used to create the reactive app
+- **Genre Rating Chart** — `docs/images/first-chart.png`
+- **SQLite database** — generated from the library CSV files
+- **Project log** — records the steps and results from each program run
 
-## Initial Results
+## Library Genre Rating Analysis
 
-![One analyst-selected chart](docs/images/first-chart.png)
+![Average Review Rating by Genre](docs/images/first-chart.png)
 
-![Marimo reactive app preview](docs/images/marimo-local-preview.png)
+This analysis compares the average review rating across six book genres using data from the books and reviews tables.
+
+Mystery had the highest average rating at 3.62, while Fiction had the lowest at 3.14. Overall, the average ratings were fairly close across all six genres.
 
 ## Important Folders and Files
 
