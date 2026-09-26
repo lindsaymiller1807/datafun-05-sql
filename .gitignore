@@ -195,3 +195,5 @@ __pycache__/
 
 # WHY: Notebook checkpoint state is generated.
 .ipynb_checkpoints/
+
+data/library/library.sqlite
