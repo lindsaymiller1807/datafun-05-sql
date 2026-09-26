@@ -4,11 +4,7 @@
 > data story. Include a narrative telling your
 > results, observations, and interpretations.
 > Display visuals as needed for a compelling story.
-
-## Professional Workflow
-
-See [**Workflow B: Apply Example Project**](https://denisecase.github.io/pro-analytics-02/workflow-b-apply-example-project/)
-to get a project like this running on your machine.
+>
 
 ## Documentation Index
 
@@ -18,16 +14,46 @@ to get a project like this running on your machine.
 - [**Data Card**](./data-card.md)
 - [**API**](./api.md)
 
-## Initial Results
+## Library Genre Rating Analysis
 
-After reviewing the related tables in your chosen domain,
-use the code in the **src/datafun**
-folder to get them in a database so we can use SQL to
-join and query the related tables.
+This project analyzes average book review ratings by genre using related
+library data.
 
-![One analyst-selected chart](./images/first-chart.png)
+The analysis uses two related tables:
 
-![Marimo reactive app preview](./images/marimo-local-preview.png)
+- the **books** table, which contains each book's genre
+- the **reviews** table, which contains review ratings
+
+The tables are connected using `book_id`.
+
+The goal of the analysis was to compare the average review rating for each
+book genre.
+
+![Average Review Rating by Genre](./images/first-chart.png)
+
+### Results
+
+The average review ratings were:
+
+- Mystery: 3.62
+- Biography: 3.57
+- Technology: 3.50
+- History: 3.34
+- Science: 3.31
+- Fiction: 3.14
+
+Mystery had the highest average review rating at 3.62, while Fiction had the
+lowest average rating at 3.14.
+
+Overall, the average ratings were fairly close across all six genres.
+
+### Interpretation
+
+The results suggest that genre may have some relationship with average review
+ratings, although the differences between genres are relatively small.
+
+A useful next step would be to explore whether the number of reviews or the
+length of the books is related to the ratings.
 
 ## Produced Artifacts
 
