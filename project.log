@@ -256,3 +256,303 @@ plot.box() method for creating box plots.
 2026-09-24 12:43:53 | INFO | P05 | ===================================
 2026-09-24 12:43:53 | INFO | P05 | END main() - Executed successfully!
 2026-09-24 12:43:53 | INFO | P05 | ===================================
+2026-09-25 18:11:33 | INFO | P05 | Books grain: one book
+2026-09-25 18:11:33 | INFO | P05 | Reviews grain: one review
+2026-09-25 18:11:33 | INFO | P05 | Books columns: ['book_id', 'title', 'branch_id', 'genre', 'pages']
+2026-09-25 18:11:33 | INFO | P05 | Reviews columns: ['review_id', 'book_id', 'rating', 'review_text']
+2026-09-25 18:11:33 | INFO | P05 | 
+The data is stored in two related tables.
+
+One book can have many reviews.
+The reviews table uses book_id to identify the book being reviewed.
+
+The shared book_id key connects the books and reviews tables.
+
+2026-09-25 18:11:33 | INFO | P05 | books file = data/library/book.csv
+2026-09-25 18:11:33 | INFO | P05 | reviews file = data/library/review.csv
+2026-09-25 18:11:33 | INFO | P05 | SQLite database connection created.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 04. LOAD the tables into SQLite.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | Related tables loaded into SQLite.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 05. QUERY across related tables with SQL.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 
+I want to compare the average review rating for each book genre.
+
+The result should have one row per genre.
+
+The information I need requires two tables:
+- genre is in the books table,
+- rating is in the reviews table.
+
+The tables are connected using book_id.
+
+2026-09-25 18:11:33 | INFO | P05 | 
+SQL query:
+
+SELECT
+    b.genre,
+    ROUND(AVG(r.rating), 2) AS average_rating,
+    COUNT(r.review_id) AS review_count
+FROM books AS b
+JOIN reviews AS r
+    ON b.book_id = r.book_id
+GROUP BY
+    b.genre
+ORDER BY
+    average_rating DESC;
+
+2026-09-25 18:11:33 | INFO | P05 | 
+Query result:
+        genre  average_rating  review_count
+0     Mystery            3.62            34
+1   Biography            3.57            21
+2  Technology            3.50            30
+3     History            3.34            29
+4     Science            3.31            36
+5     Fiction            3.14            36
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 06. VISUALIZE the query result with Python.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 
+The query result has one average rating value for each book genre.
+
+A bar chart works well for comparing
+average ratings across named genres.
+
+2026-09-25 18:11:33 | INFO | P05 | Chart saved successfully at docs/images/first-chart.png.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 07. SUMMARIZE what you found.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | CUSTOM OBSERVATIONS:
+    The SQL query connected information from
+    the books and reviews tables.
+
+    The result has one row per genre.
+
+    I observed ...
+
+    Based on this result, I would next like to explore ...
+    
+2026-09-25 18:11:33 | INFO | P05 | === RUN START ===
+2026-09-25 18:11:33 | INFO | P05 | project=P05 - PYTHON AND SQL
+2026-09-25 18:11:33 | INFO | P05 | repo_dir=datafun-05-sql
+2026-09-25 18:11:33 | INFO | P05 | python=3.14.7
+2026-09-25 18:11:33 | INFO | P05 | os=Darwin 25.6.0
+2026-09-25 18:11:33 | INFO | P05 | shell=zsh
+2026-09-25 18:11:33 | INFO | P05 | cwd=.
+2026-09-25 18:11:33 | INFO | P05 | github_actions=False
+2026-09-25 18:11:33 | INFO | P05 | ===================================
+2026-09-25 18:11:33 | INFO | P05 | START main()
+2026-09-25 18:11:33 | INFO | P05 | ===================================
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 18:11:33 | INFO | P05 | 01. LOAD the related tables.
+2026-09-25 18:11:33 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | Books grain: one book
+2026-09-25 19:41:45 | INFO | P05 | Reviews grain: one review
+2026-09-25 19:41:45 | INFO | P05 | Books columns: ['book_id', 'title', 'branch_id', 'genre', 'pages']
+2026-09-25 19:41:45 | INFO | P05 | Reviews columns: ['review_id', 'book_id', 'rating', 'review_text']
+2026-09-25 19:41:45 | INFO | P05 | 
+The data is stored in two related tables.
+
+One book can have many reviews.
+The reviews table uses book_id to identify the book being reviewed.
+
+The shared book_id key connects the books and reviews tables.
+
+2026-09-25 19:41:45 | INFO | P05 | books file = data/library/book.csv
+2026-09-25 19:41:45 | INFO | P05 | reviews file = data/library/review.csv
+2026-09-25 19:41:45 | INFO | P05 | SQLite database connection created.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 04. LOAD the tables into SQLite.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | Related tables loaded into SQLite.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 05. QUERY across related tables with SQL.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 
+I want to compare the average review rating for each book genre.
+
+The result should have one row per genre.
+
+The information I need requires two tables:
+- genre is in the books table,
+- rating is in the reviews table.
+
+The tables are connected using book_id.
+
+2026-09-25 19:41:45 | INFO | P05 | 
+SQL query:
+
+SELECT
+    b.genre,
+    ROUND(AVG(r.rating), 2) AS average_rating,
+    COUNT(r.review_id) AS review_count
+FROM books AS b
+JOIN reviews AS r
+    ON b.book_id = r.book_id
+GROUP BY
+    b.genre
+ORDER BY
+    average_rating DESC;
+
+2026-09-25 19:41:45 | INFO | P05 | 
+Query result:
+        genre  average_rating  review_count
+0     Mystery            3.62            34
+1   Biography            3.57            21
+2  Technology            3.50            30
+3     History            3.34            29
+4     Science            3.31            36
+5     Fiction            3.14            36
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 06. VISUALIZE the query result with Python.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 
+The query result has one average rating value for each book genre.
+
+A bar chart works well for comparing
+average ratings across named genres.
+
+2026-09-25 19:41:45 | INFO | P05 | Chart saved successfully at docs/images/first-chart.png.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | 07. SUMMARIZE what you found.
+2026-09-25 19:41:45 | INFO | P05 | -------------------------------
+2026-09-25 19:41:45 | INFO | P05 | CUSTOM OBSERVATIONS:
+    The SQL query connected information from
+    the books and reviews tables.
+
+    The result has one row per genre.
+
+I observed that Mystery had the highest average review rating at 3.62,
+while Fiction had the lowest average rating at 3.14.
+The average ratings were fairly close across all six genres.
+
+Based on this result, I would next like to explore whether the number
+of reviews or the length of the books has any relationship with the ratings.
+
+2026-09-25 19:41:45 | INFO | P05 | ================================
+2026-09-25 19:41:45 | INFO | P05 | 08. DISPLAY the visualization.
+2026-09-25 19:41:45 | INFO | P05 | ================================
+2026-09-25 19:48:51 | INFO | P05 | ================================
+2026-09-25 19:48:51 | INFO | P05 | END main() - Executed successfully!
+2026-09-25 19:48:51 | INFO | P05 | ================================
+2026-09-25 19:48:51 | INFO | P05 | === RUN START ===
+2026-09-25 19:48:51 | INFO | P05 | project=P05 - PYTHON AND SQL
+2026-09-25 19:48:51 | INFO | P05 | repo_dir=datafun-05-sql
+2026-09-25 19:48:51 | INFO | P05 | python=3.14.7
+2026-09-25 19:48:51 | INFO | P05 | os=Darwin 25.6.0
+2026-09-25 19:48:51 | INFO | P05 | shell=zsh
+2026-09-25 19:48:51 | INFO | P05 | cwd=.
+2026-09-25 19:48:51 | INFO | P05 | github_actions=False
+2026-09-25 19:48:51 | INFO | P05 | ===================================
+2026-09-25 19:48:51 | INFO | P05 | START main()
+2026-09-25 19:48:51 | INFO | P05 | ===================================
+2026-09-25 19:48:51 | INFO | P05 | -------------------------------
+2026-09-25 19:48:51 | INFO | P05 | 01. LOAD the related tables.
+2026-09-25 19:48:51 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | Books grain: one book
+2026-09-25 19:53:46 | INFO | P05 | Reviews grain: one review
+2026-09-25 19:53:46 | INFO | P05 | Books columns: ['book_id', 'title', 'branch_id', 'genre', 'pages']
+2026-09-25 19:53:46 | INFO | P05 | Reviews columns: ['review_id', 'book_id', 'rating', 'review_text']
+2026-09-25 19:53:46 | INFO | P05 | 
+The data is stored in two related tables.
+
+One book can have many reviews.
+The reviews table uses book_id to identify the book being reviewed.
+
+The shared book_id key connects the books and reviews tables.
+
+2026-09-25 19:53:46 | INFO | P05 | books file = data/library/book.csv
+2026-09-25 19:53:46 | INFO | P05 | reviews file = data/library/review.csv
+2026-09-25 19:53:46 | INFO | P05 | SQLite database connection created.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 04. LOAD the tables into SQLite.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | Related tables loaded into SQLite.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 05. QUERY across related tables with SQL.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 
+I want to compare the average review rating for each book genre.
+
+The result should have one row per genre.
+
+The information I need requires two tables:
+- genre is in the books table,
+- rating is in the reviews table.
+
+The tables are connected using book_id.
+
+2026-09-25 19:53:46 | INFO | P05 | 
+SQL query:
+
+SELECT
+    b.genre,
+    ROUND(AVG(r.rating), 2) AS average_rating,
+    COUNT(r.review_id) AS review_count
+FROM books AS b
+JOIN reviews AS r
+    ON b.book_id = r.book_id
+GROUP BY
+    b.genre
+ORDER BY
+    average_rating DESC;
+
+2026-09-25 19:53:46 | INFO | P05 | 
+Query result:
+        genre  average_rating  review_count
+0     Mystery            3.62            34
+1   Biography            3.57            21
+2  Technology            3.50            30
+3     History            3.34            29
+4     Science            3.31            36
+5     Fiction            3.14            36
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 06. VISUALIZE the query result with Python.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 
+The query result has one average rating value for each book genre.
+
+A bar chart works well for comparing
+average ratings across named genres.
+
+2026-09-25 19:53:46 | INFO | P05 | Chart saved successfully at docs/images/first-chart.png.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 07. SUMMARIZE what you found.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | CUSTOM OBSERVATIONS:
+    The SQL query connected information from
+    the books and reviews tables.
+
+    The result has one row per genre.
+
+I observed that Mystery had the highest average review rating at 3.62,
+while Fiction had the lowest average rating at 3.14.
+The average ratings were fairly close across all six genres.
+
+Based on this result, I would next like to explore whether the number
+of reviews or the length of the books has any relationship with the ratings.
+
+2026-09-25 19:53:46 | INFO | P05 | ================================
+2026-09-25 19:53:46 | INFO | P05 | 08. DISPLAY the visualization.
+2026-09-25 19:53:46 | INFO | P05 | ================================
+2026-09-25 19:53:46 | INFO | P05 | ================================
+2026-09-25 19:53:46 | INFO | P05 | END main() - Executed successfully!
+2026-09-25 19:53:46 | INFO | P05 | ================================
+2026-09-25 19:53:46 | INFO | P05 | === RUN START ===
+2026-09-25 19:53:46 | INFO | P05 | project=P05 - PYTHON AND SQL
+2026-09-25 19:53:46 | INFO | P05 | repo_dir=datafun-05-sql
+2026-09-25 19:53:46 | INFO | P05 | python=3.14.7
+2026-09-25 19:53:46 | INFO | P05 | os=Darwin 25.6.0
+2026-09-25 19:53:46 | INFO | P05 | shell=zsh
+2026-09-25 19:53:46 | INFO | P05 | cwd=.
+2026-09-25 19:53:46 | INFO | P05 | github_actions=False
+2026-09-25 19:53:46 | INFO | P05 | ===================================
+2026-09-25 19:53:46 | INFO | P05 | START main()
+2026-09-25 19:53:46 | INFO | P05 | ===================================
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------
+2026-09-25 19:53:46 | INFO | P05 | 01. LOAD the related tables.
+2026-09-25 19:53:46 | INFO | P05 | -------------------------------

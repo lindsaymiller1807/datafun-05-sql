@@ -15,7 +15,7 @@ uv run python -m datafun.app
 
 DOMAIN:
 
-A small business with regions, stores, and employees.
+A library dataset with books and reviews.
 
 The data is stored in three related CSV files:
 
@@ -85,15 +85,14 @@ LOG: logging.Logger = get_logger("P05", level="DEBUG")
 
 # === LOCATE THE DATA FILES ===
 
-DATA_DIR: Final[Path] = Path("data") / "retail"
+DATA_DIR: Final[Path] = Path("data") / "library"
 
-REGION_FILE: Final[Path] = DATA_DIR / "region.csv"
-STORE_FILE: Final[Path] = DATA_DIR / "store.csv"
-EMPLOYEE_FILE: Final[Path] = DATA_DIR / "employee.csv"
+BOOK_FILE: Final[Path] = DATA_DIR / "book.csv"
+REVIEW_FILE: Final[Path] = DATA_DIR / "review.csv"
 
 # === LOCATE THE SQLITE DATABASE ===
 
-DATABASE_FILE: Final[Path] = DATA_DIR / "business.sqlite"
+DATABASE_FILE: Final[Path] = DATA_DIR / "library.sqlite"
 
 # === LOCATE THE CHART OUTPUT ===
 
@@ -102,65 +101,60 @@ CHART_PATH: Final[Path] = CHART_DIR / "first-chart.png"
 
 # === DETERMINE WHAT ONE ROW REPRESENTS ===
 
-REGION_GRAIN: Final[str] = "one business region"
-STORE_GRAIN: Final[str] = "one store"
-EMPLOYEE_GRAIN: Final[str] = "one employee"
+BOOK_GRAIN: Final[str] = "one book"
+REVIEW_GRAIN: Final[str] = "one review"
 
 # === DESCRIBE THE TABLE RELATIONSHIPS ===
 
 RELATIONSHIP_DECISION: Final[str] = r"""
-The data is stored in three related tables.
+The data is stored in two related tables.
 
-One region can have many stores.
-The stores table uses region_id to identify each store's region.
+One book can have many reviews.
+The reviews table uses book_id to identify the book being reviewed.
 
-One store can have many employees.
-The employees table uses store_id to identify each employee's store.
-
-The shared keys connect information stored in different tables.
+The shared book_id key connects the books and reviews tables.
 """
 
 # === DEFINE THE ANALYTICAL QUESTION ===
 
 CUSTOM_QUERY_DECISION: Final[str] = r"""
-I want to compare the number of employees working at each store.
-The result should have one row per store.
+I want to compare the average review rating for each book genre.
 
-The information I need requires all three tables:
- - region name is in regions,
- - store name is in stores,
- - employee info is in employees.
+The result should have one row per genre.
+
+The information I need requires two tables:
+- genre is in the books table,
+- rating is in the reviews table.
+
+The tables are connected using book_id.
 """
 
 # === WRITE THE SQL QUERY ===
 
 CUSTOM_SQL_QUERY: Final[str] = """
 SELECT
-    r.region_name,
-    s.store_name,
-    COUNT(e.employee_id) AS employee_count
-FROM regions AS r
-JOIN stores AS s
-    ON r.region_id = s.region_id
-LEFT JOIN employees AS e
-    ON s.store_id = e.store_id
+    b.genre,
+    ROUND(AVG(r.rating), 2) AS average_rating,
+    COUNT(r.review_id) AS review_count
+FROM books AS b
+JOIN reviews AS r
+    ON b.book_id = r.book_id
 GROUP BY
-    r.region_name,
-    s.store_name
+    b.genre
 ORDER BY
-    employee_count DESC;
+    average_rating DESC;
 """
 
 # === CHOOSE A VISUALIZATION ===
 
-CUSTOM_CHART_DECISION: Final[str] = r"""
-The query result has one numeric value
-(employee count) for each store.
 
-A bar chart works for comparing
-a numeric value across named categories.
-Every pandas df has a
-plot.box() method for creating box plots.
+# === CHOOSE A VISUALIZATION ===
+
+CUSTOM_CHART_DECISION: Final[str] = r"""
+The query result has one average rating value for each book genre.
+
+A bar chart works well for comparing
+average ratings across named genres.
 """
 
 
@@ -185,142 +179,119 @@ def main() -> None:
     LOG.info("01. LOAD the related tables.")
     LOG.info("-------------------------------")
 
-    log_path(LOG, "regions file", path=REGION_FILE)
-    log_path(LOG, "stores file", path=STORE_FILE)
-    log_path(LOG, "employees file", path=EMPLOYEE_FILE)
 
-    regions_df: pd.DataFrame = pd.read_csv(REGION_FILE)
-    stores_df: pd.DataFrame = pd.read_csv(STORE_FILE)
-    employees_df: pd.DataFrame = pd.read_csv(EMPLOYEE_FILE)
+books_df: pd.DataFrame = pd.read_csv(BOOK_FILE)
+reviews_df: pd.DataFrame = pd.read_csv(REVIEW_FILE)
 
-    LOG.info("Related tables loaded successfully.")
+LOG.info(f"Books grain: {BOOK_GRAIN}")
+LOG.info(f"Reviews grain: {REVIEW_GRAIN}")
 
-    LOG.info("-------------------------------")
-    LOG.info("02. INSPECT the grain and keys.")
-    LOG.info("-------------------------------")
+LOG.info(f"Books columns: {books_df.columns.tolist()}")
+LOG.info(f"Reviews columns: {reviews_df.columns.tolist()}")
 
-    LOG.info(f"Regions grain: {REGION_GRAIN}")
-    LOG.info(f"Stores grain: {STORE_GRAIN}")
-    LOG.info(f"Employees grain: {EMPLOYEE_GRAIN}")
+LOG.info(RELATIONSHIP_DECISION)
 
-    LOG.info(f"Regions columns: {regions_df.columns.tolist()}")
-    LOG.info(f"Stores columns: {stores_df.columns.tolist()}")
-    LOG.info(f"Employees columns: {employees_df.columns.tolist()}")
+log_path(LOG, "books file", path=BOOK_FILE)
+log_path(LOG, "reviews file", path=REVIEW_FILE)
 
-    LOG.info(RELATIONSHIP_DECISION)
+connection: sqlite3.Connection = sqlite3.connect(DATABASE_FILE)
 
-    LOG.info("-------------------------------")
-    LOG.info("03. CREATE a SQLite database.")
-    LOG.info("-------------------------------")
+LOG.info("SQLite database connection created.")
 
-    log_path(LOG, "SQLite database", path=DATABASE_FILE)
+LOG.info("-------------------------------")
+LOG.info("04. LOAD the tables into SQLite.")
+LOG.info("-------------------------------")
 
-    connection: sqlite3.Connection = sqlite3.connect(DATABASE_FILE)
+books_df.to_sql(
+    "books",
+    connection,
+    if_exists="replace",
+    index=False,
+)
 
-    LOG.info("SQLite database connection created.")
+reviews_df.to_sql(
+    "reviews",
+    connection,
+    if_exists="replace",
+    index=False,
+)
 
-    LOG.info("-------------------------------")
-    LOG.info("04. LOAD the tables into SQLite.")
-    LOG.info("-------------------------------")
+LOG.info("Related tables loaded into SQLite.")
 
-    regions_df.to_sql(
-        "regions",
-        connection,
-        if_exists="replace",
-        index=False,
-    )
+LOG.info("-------------------------------")
+LOG.info("05. QUERY across related tables with SQL.")
+LOG.info("-------------------------------")
 
-    stores_df.to_sql(
-        "stores",
-        connection,
-        if_exists="replace",
-        index=False,
-    )
+LOG.info(CUSTOM_QUERY_DECISION)
+LOG.info(f"\nSQL query:\n{CUSTOM_SQL_QUERY}")
 
-    employees_df.to_sql(
-        "employees",
-        connection,
-        if_exists="replace",
-        index=False,
-    )
+result_df: pd.DataFrame = pd.read_sql_query(
+    CUSTOM_SQL_QUERY,
+    connection,
+)
 
-    LOG.info("Related tables loaded into SQLite.")
+LOG.info(f"\nQuery result:\n{result_df}")
 
-    LOG.info("-------------------------------")
-    LOG.info("05. QUERY across related tables with SQL.")
-    LOG.info("-------------------------------")
+LOG.info("-------------------------------")
+LOG.info("06. VISUALIZE the query result with Python.")
+LOG.info("-------------------------------")
 
-    LOG.info(CUSTOM_QUERY_DECISION)
-    LOG.info(f"\nSQL query:\n{CUSTOM_SQL_QUERY}")
+LOG.info(CUSTOM_CHART_DECISION)
 
-    result_df: pd.DataFrame = pd.read_sql_query(
-        CUSTOM_SQL_QUERY,
-        connection,
-    )
+genre_ax = result_df.plot.bar(
+    x="genre",
+    y="average_rating",
+    legend=False,
+)
 
-    LOG.info(f"\nQuery result:\n{result_df}")
+genre_ax.set_title("Average Review Rating by Genre")
+genre_ax.set_xlabel("Genre")
+genre_ax.set_ylabel("Average Rating")
 
-    LOG.info("-------------------------------")
-    LOG.info("06. VISUALIZE the query result with Python.")
-    LOG.info("-------------------------------")
+CHART_DIR.mkdir(parents=True, exist_ok=True)
 
-    LOG.info(CUSTOM_CHART_DECISION)
+save_chart(
+    genre_ax,
+    CHART_PATH,
+)
 
-    employee_ax = result_df.plot.bar(
-        x="store_name",
-        y="employee_count",
-        legend=False,
-    )
+LOG.info(f"Chart saved successfully at {CHART_PATH}.")
 
-    # CUSTOM: The analyst can customize the returned Matplotlib Axes object.
-    employee_ax.set_title("Employees by Store")
-    employee_ax.set_xlabel("Store")
-    employee_ax.set_ylabel("Number of Employees")
+LOG.info("-------------------------------")
+LOG.info("07. SUMMARIZE what you found.")
+LOG.info("-------------------------------")
 
-    CHART_DIR.mkdir(parents=True, exist_ok=True)
+# Run this app first.
+# Review the SQL result and visualization.
+# Then record your CUSTOM observations
+# in a simple multi-line raw string.
 
-    save_chart(
-        employee_ax,
-        CHART_PATH,
-    )
-
-    LOG.info(f"Chart saved successfully at {CHART_PATH}.")
-
-    LOG.info("-------------------------------")
-    LOG.info("07. SUMMARIZE what you found.")
-    LOG.info("-------------------------------")
-
-    # Run this app first.
-    # Review the SQL result and visualization.
-    # Then record your CUSTOM observations
-    # in a simple multi-line raw string.
-
-    LOG.info(r"""CUSTOM OBSERVATIONS:
+LOG.info(r"""CUSTOM OBSERVATIONS:
     The SQL query connected information from
-    the regions, stores, and employees tables.
+    the books and reviews tables.
 
-    The result has one row per store.
+    The result has one row per genre.
 
-    I observed ...
+I observed that Mystery had the highest average review rating at 3.62,
+while Fiction had the lowest average rating at 3.14.
+The average ratings were fairly close across all six genres.
 
-    Based on this result, I would next like to explore ...
-    """)
+Based on this result, I would next like to explore whether the number
+of reviews or the length of the books has any relationship with the ratings.
+""")
 
-    LOG.info("-------------------------------")
-    LOG.info("08. DISPLAY the visualization.")
-    LOG.info("-------------------------------")
 
-    LOG.info("In a script, call plt.show() at the end to display all charts.")
-    LOG.info("Close all chart windows (with the close button) to continue.")
+LOG.info("================================")
+LOG.info("08. DISPLAY the visualization.")
+LOG.info("================================")
 
-    plt.show()
+plt.show()
 
-    connection.close()
+connection.close()
 
-    LOG.info("===================================")
-    LOG.info("END main() - Executed successfully!")
-    LOG.info("===================================")
-
+LOG.info("================================")
+LOG.info("END main() - Executed successfully!")
+LOG.info("================================")
 
 # === CONDITIONAL EXECUTION GUARD ===
 
